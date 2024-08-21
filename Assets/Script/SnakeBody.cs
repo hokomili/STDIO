@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class SnakeBody : MonoBehaviour,ICollidible
 {
+    public Gread gread;
+    public Rigidbody2D rb;
     public void Collide(ICollidible collider)
     {
         Debug.Log("Collide!!!");
     }
-
     // Start is called before the first frame update
     void Start()
     {

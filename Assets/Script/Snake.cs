@@ -8,10 +8,10 @@ public class Snake : MonoBehaviour
     public Direction direction=Direction.North;
     public Vector2 TargetPosition=new(0.5f,0.5f);
     public List<Vector2> TargetPositions=new();
-    public float BlockSize;
     public float LerpStrength=0.1f;
-    public Rigidbody2D RB;
-    public List<Rigidbody2D> RBs; 
+    public SnakeBody SnakeHead;
+    public GreadSystem greadSystem;
+    public List<SnakeBody> SnakeBodies; 
     public float MoveCooldown=1;
     float timer=0;
     public enum Direction{
@@ -23,50 +23,85 @@ public class Snake : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SnakeHead.gread=greadSystem.GetGread(TargetPosition.x,TargetPosition.y);
+        SnakeHead.gread.collidible=SnakeHead;
+        for(int i=SnakeBodies.Count-1;i>=0;i--){
+            SnakeBodies[i].gread=greadSystem.GetGread(TargetPositions[i].x,TargetPositions[i].y);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.W))direction=Direction.North;
-        if(Input.GetKeyDown(KeyCode.A))direction=Direction.West;
-        if(Input.GetKeyDown(KeyCode.S))direction=Direction.South;
-        if(Input.GetKeyDown(KeyCode.D))direction=Direction.East;
+        if(SnakeBodies.Count>0){
+            if(Input.GetKeyDown(KeyCode.W)&&SnakeHead.gread.Up!=SnakeBodies[0].gread)direction=Direction.North;
+            if(Input.GetKeyDown(KeyCode.A)&&SnakeHead.gread.Left!=SnakeBodies[0].gread)direction=Direction.West;
+            if(Input.GetKeyDown(KeyCode.S)&&SnakeHead.gread.Down!=SnakeBodies[0].gread)direction=Direction.South;
+            if(Input.GetKeyDown(KeyCode.D)&&SnakeHead.gread.Right!=SnakeBodies[0].gread)direction=Direction.East;
+        }
+        else{
+            if(Input.GetKeyDown(KeyCode.W))direction=Direction.North;
+            if(Input.GetKeyDown(KeyCode.A))direction=Direction.West;
+            if(Input.GetKeyDown(KeyCode.S))direction=Direction.South;
+            if(Input.GetKeyDown(KeyCode.D))direction=Direction.East;
+        }
+        
     }
     void FixedUpdate(){
         timer+=Time.deltaTime;
         if(timer>MoveCooldown){
             timer-=MoveCooldown;
-            for(int i=RBs.Count-1;i>=1;i--)
-            {
-                TargetPositions[i]=TargetPositions[i-1];
+            bool iscollided=false;
+            if(direction==Direction.North&&SnakeHead.gread.Up.collidible!=null)iscollided=true;
+            if(direction==Direction.West&&SnakeHead.gread.Left.collidible!=null)iscollided=true;
+            if(direction==Direction.South&&SnakeHead.gread.Down.collidible!=null)iscollided=true;
+            if(direction==Direction.East&&SnakeHead.gread.Right.collidible!=null)iscollided=true;
+            if(!iscollided){
+                for(int i=SnakeBodies.Count-1;i>=1;i--){
+                    TargetPositions[i]=TargetPositions[i-1];
+                    if(i==SnakeBodies.Count-1)SnakeBodies[i].gread.collidible=null;
+                    SnakeBodies[i].gread=SnakeBodies[i-1].gread;
+                    SnakeBodies[i].gread.collidible=SnakeBodies[i];
+                }
+                if(SnakeBodies.Count>0){
+                    TargetPositions[0]=TargetPosition;
+                    if(SnakeBodies.Count==1)SnakeBodies[0].gread.collidible=null;
+                    SnakeBodies[0].gread=SnakeHead.gread;
+                    SnakeBodies[0].gread.collidible=SnakeBodies[0];
+                }
+                switch (direction)
+                {
+                    case Direction.North:
+                        TargetPosition+=Vector2.up*GreadSystem.BlockSize;
+                        SnakeHead.gread=SnakeHead.gread.Up;
+                        SnakeHead.gread.collidible=SnakeHead;
+                    break;
+                    case Direction.West:
+                        TargetPosition+=Vector2.left*GreadSystem.BlockSize;
+                        SnakeHead.gread=SnakeHead.gread.Left;
+                        SnakeHead.gread.collidible=SnakeHead;
+                    break;
+                    case Direction.South:
+                        TargetPosition+=Vector2.down*GreadSystem.BlockSize;
+                        SnakeHead.gread=SnakeHead.gread.Down;
+                        SnakeHead.gread.collidible=SnakeHead;
+                    break;
+                    case Direction.East:
+                        TargetPosition+=Vector2.right*GreadSystem.BlockSize;
+                        SnakeHead.gread=SnakeHead.gread.Right;
+                        SnakeHead.gread.collidible=SnakeHead;
+                    break;
+                }
             }
-            if(RBs.Count>0){
-                TargetPositions[0]=TargetPosition;
+            else{
+                Debug.Log("Hit wall");
             }
-            switch (direction)
-            {
-                case Direction.North:
-                    TargetPosition+=Vector2.up*BlockSize;
-                break;
-                case Direction.West:
-                    TargetPosition+=Vector2.left*BlockSize;
-                break;
-                case Direction.South:
-                    TargetPosition+=Vector2.down*BlockSize;
-                break;
-                case Direction.East:
-                    TargetPosition+=Vector2.right*BlockSize;
-                break;
-            }
-            
         }
-        for(int i=RBs.Count-1;i>=1;i--)
+        for(int i=SnakeBodies.Count-1;i>=1;i--)
         {
-            RBs[i].position=Vector2.Lerp(RBs[i].position,TargetPositions[i],LerpStrength*Time.deltaTime);
+            SnakeBodies[i].rb.position=Vector2.Lerp(SnakeBodies[i].rb.position,TargetPositions[i],LerpStrength*Time.deltaTime);
         }
-        RBs[0].position=Vector2.Lerp(RBs[0].position,TargetPositions[0],LerpStrength*Time.deltaTime);
-        RB.position=Vector2.Lerp(RB.position,TargetPosition,LerpStrength*Time.deltaTime);
+        SnakeBodies[0].rb.position=Vector2.Lerp(SnakeBodies[0].rb.position,TargetPositions[0],LerpStrength*Time.deltaTime);
+        SnakeHead.rb.position=Vector2.Lerp(SnakeHead.rb.position,TargetPosition,LerpStrength*Time.deltaTime);
     }
 }

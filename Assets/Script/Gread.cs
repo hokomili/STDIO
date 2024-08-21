@@ -1,13 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Gread : MonoBehaviour
-{
-    public int x;
-    public int y;
-    public Gread left;
-    public Gread right;
-    public Gread up;
-    public Gread down;
+public class Gread{
+    public Gread(GreadSystem greadSystem,float posx,float posy){
+        this.greadSystem = greadSystem;
+        x=posx;
+        y=posy;
+    }
+    public ICollidible collidible;
+    public GreadSystem greadSystem;
+    public float x;
+    public float y;
+    public Gread Left=>greadSystem.GetGread(x-GreadSystem.BlockSize,y);
+    public Gread Right=>greadSystem.GetGread(x+GreadSystem.BlockSize,y);
+    public Gread Up=>greadSystem.GetGread(x,y-GreadSystem.BlockSize);
+    public Gread Down=>greadSystem.GetGread(x,y+GreadSystem.BlockSize);
 }
