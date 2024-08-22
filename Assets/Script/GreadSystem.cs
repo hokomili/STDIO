@@ -10,7 +10,7 @@ public class GreadSystem : MonoBehaviour{
     public float startposy;
     public Gread[,] greads;
     public Gread GetGread(float x,float y){
-        return greads[Mathf.RoundToInt((x-startposx)/BlockSize),Mathf.RoundToInt((startposy-y)/BlockSize)];
+        return greads[Mathf.RoundToInt((x-startposx)/BlockSize),Mathf.RoundToInt((y-startposy)/BlockSize)];
     }
     void Awake(){
         greads = new Gread[width,height];
@@ -18,8 +18,7 @@ public class GreadSystem : MonoBehaviour{
         {
             for (int k = 0; k < height; k++)
             {
-                greads[i,k]=new Gread(this,i*BlockSize+startposx,-k*BlockSize+startposy);
-                Debug.Log(greads[i,k].x+","+greads[i,k].y);
+                greads[i,k]=new Gread(this,i*BlockSize+startposx,k*BlockSize+startposy);
             }
         }
     }
