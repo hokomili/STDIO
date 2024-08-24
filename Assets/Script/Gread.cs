@@ -1,3 +1,5 @@
+using System;
+
 public class Gread{
     public Gread(GreadSystem greadSystem,float posx,float posy){
         this.greadSystem = greadSystem;
@@ -5,6 +7,7 @@ public class Gread{
         y=posy;
     }
     public ICollidible collidible;
+    public ICollectable collectable;
     public GreadSystem greadSystem;
     public float x;
     public float y;
@@ -22,6 +25,12 @@ public class Gread{
                 return null;
         }
     }
+
+    public bool isEmpty()
+    {
+        return collidible == null && collectable == null;
+    }
+
     public Gread Left=>greadSystem.GetGread(x-GreadSystem.BlockSize,y);
     public Gread Right=>greadSystem.GetGread(x+GreadSystem.BlockSize,y);
     public Gread Up=>greadSystem.GetGread(x,y+GreadSystem.BlockSize);

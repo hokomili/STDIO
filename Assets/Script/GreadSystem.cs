@@ -10,10 +10,14 @@ public class GreadSystem : MonoBehaviour{
     public Wall wall1;
     public float startposx;
     public float startposy;
+    private int width;
+    private int height;
     public Gread[,] greads;
     public Gread GetGread(float x,float y){
         return greads[Mathf.RoundToInt((x-startposx)/BlockSize),Mathf.RoundToInt((y-startposy)/BlockSize)];
     }
+    public int GetWidth() => width;
+    public int GetHeight() => height;
     void Awake(){
         BackgroundTilemap.CompressBounds();
         ForegroundTilemap.CompressBounds();
@@ -33,5 +37,7 @@ public class GreadSystem : MonoBehaviour{
                 }
             }
         }
+        width = x;
+        height = y;
     }
 }
