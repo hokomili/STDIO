@@ -8,6 +8,20 @@ public class Gread{
     public GreadSystem greadSystem;
     public float x;
     public float y;
+    public Gread GetGread(Snake.Direction direction){
+        switch(direction){
+            case Snake.Direction.North:
+                return Up;
+            case Snake.Direction.West:
+                return Left;
+            case Snake.Direction.South:
+                return Down;
+            case Snake.Direction.East:
+                return Right;
+            default:
+                return null;
+        }
+    }
     public Gread Left=>greadSystem.GetGread(x-GreadSystem.BlockSize,y);
     public Gread Right=>greadSystem.GetGread(x+GreadSystem.BlockSize,y);
     public Gread Up=>greadSystem.GetGread(x,y+GreadSystem.BlockSize);
