@@ -63,6 +63,9 @@ public class Snake : MonoBehaviour
             SnakeHead.gread.GetGread(direction).collidible.Collide(SnakeHead);
         }
         else{
+            if(SnakeHead.gread.GetGread(direction).collectable!=null){
+                SnakeHead.gread.GetGread(direction).collectable.Collect();
+            }
             for(int i=SnakeBodies.Count-1;i>=1;i--){
                 TargetPositions[i]=TargetPositions[i-1];
                 if(i==SnakeBodies.Count-1)SnakeBodies[i].gread.collidible=null;

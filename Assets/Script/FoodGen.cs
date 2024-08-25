@@ -6,6 +6,7 @@ public class FoodGen : MonoBehaviour
 {
     public GreadSystem greadSystem;
     public GameObject foodBase;
+    public Food food1;
     private int timer;
     public int CooldownTicks;
     // Start is called before the first frame update
@@ -43,7 +44,11 @@ public class FoodGen : MonoBehaviour
             Vector2Int pos = candidates[rnd];
             Gread gread = greadSystem.greads[pos.x, pos.y];
             GameObject foodObject = Instantiate(foodBase);
-            foodObject.SetActive(true);
+            FoodObject foodObjectObject=foodObject.GetComponent<FoodObject>();
+            foodObjectObject.FoodType=food1;
+            foodObjectObject.FoodImage.sprite=food1.FoodSprite;
+            foodObjectObject.FoodImage.color=food1.FoodColor;
+            foodObjectObject.mygread=gread;
             foodObject.transform.position = new Vector3(gread.x, gread.y, 0);
             gread.collectable = foodObject.GetComponent<ICollectable>();
         }
